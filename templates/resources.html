@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from "_macros.html" import safety_notice with context %}
+
+{% block title %}{{ t('Official PMBJP resources') }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{{ t('Official resources') }}</p>
+  <h1>{{ t('Official PMBJP resources') }}</h1>
+  <p class="lede">{{ t('We link to official pages instead of copying information that may become outdated.') }}</p>
+</header>
+
+<aside class="callout callout-info">
+  <p>{{ t('We cannot confirm the current content, availability or accuracy of external government pages.') }}</p>
+  <p class="small">{{ t('This site is not a government application.') }}</p>
+</aside>
+
+<div class="link-grid">
+  {% for link in sources.official_links %}
+    <a class="link-card" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+      <strong>{{ t(link.label) }}</strong>
+      <span>{{ t(link.note) }}</span>
+      <span class="external">{{ t('External link') }} ↗</span>
+    </a>
+  {% endfor %}
+</div>
+
+<section class="section split">
+  <div class="card">
+    <h2>{{ t('Distributors and pharmacists') }}</h2>
+    <p>{{ t('This build does not include verified distributor or pharmacist records. Use the official locator to find current contact details.') }}</p>
+    <ul class="link-list">
+      <li><a class="text-link" href="https://janaushadhi.gov.in/locate-distributor" target="_blank" rel="noopener noreferrer">{{ t('Distributor information') }} ↗</a></li>
+      <li><a class="text-link" href="https://janaushadhi.gov.in/near-by-pharma" target="_blank" rel="noopener noreferrer">{{ t('Pharmacist information') }} ↗</a></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>{{ t('Stock and availability') }}</h2>
+    <p>{{ t('This site cannot check whether a Kendra is open or has a medicine in stock. Contact the Kendra before travelling.') }}</p>
+    <p>{{ t('Do not assume a Kendra is open or has a medicine in stock without reliable current evidence.') }}</p>
+  </div>
+</section>
+
+<section class="section">
+  {{ safety_notice() }}
+</section>
+{% endblock %}

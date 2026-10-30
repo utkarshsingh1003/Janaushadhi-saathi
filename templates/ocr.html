@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% from "_macros.html" import safety_notice with context %}
+
+{% block title %}{{ t('Read a medicine package or prescription') }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{{ t('Scan a prescription') }}</p>
+  <h1>{{ t('Read a medicine package or prescription') }}</h1>
+  <p class="lede">{{ t('Upload a clear, well-lit photo. The image is processed in memory and is not saved.') }}</p>
+</header>
+
+{% if not ocr_available %}
+  <div class="alert alert-warn" role="alert">
+    <p><strong>{{ t('Text recognition is not available on this server right now.') }}</strong></p>
+    <p>{{ t('You can still type medicine text into the box below and analyse it.') }}</p>
+  </div>
+{% endif %}
+
+<div class="ocr-grid">
+  <section class="card" aria-labelledby="upload-title">
+    <h2 id="upload-title">{{ t('Choose an image') }}</h2>
+    <form id="ocr-form" class="stack-form" novalidate>
+      <div class="field">
+        <label for="ocr-file">{{ t('Choose an image') }}</label>
+        <input id="ocr-file" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/bmp,image/tiff"
+               aria-describedby="ocr-file-hint" {% if not ocr_available %}disabled{% endif %}>
+        <p id="ocr-file-hint" class="hint">{{ t('Supported: JPEG, PNG, WebP, BMP, TIFF. Maximum 8 MB.') }}</p>
+      </div>
+      <button class="btn btn-primary" type="submit" data-ocr-upload {% if not ocr_available %}disabled{% endif %}>{{ t('Extract text') }}</button>
+    </form>
+    <div id="ocr-preview" class="ocr-preview" hidden>
+      <img id="ocr-preview-image" alt="{{ t('Preview of the uploaded image') }}">
+    </div>
+    <p class="small">{{ t('Do not upload prescriptions containing sensitive information you do not want processed.') }}</p>
+  </section>
+
+  <section class="card" aria-labelledby="review-title">
+    <h2 id="review-title">{{ t('Review the extracted text') }}</h2>
+    <label for="ocr-text">{{ t('Review the extracted text') }}</label>
+    <textarea id="ocr-text" rows="8" maxlength="2000" spellcheck="false"
+              placeholder="{{ t('Correct any mistakes, then analyse the text.') }}"></textarea>
+    <p class="hint">{{ t('Recognised text is shown for review only. It is never saved as your medical history.') }}</p>
+    <button class="btn btn-secondary" type="button" data-ocr-analyze>{{ t('Analyse text') }}</button>
+    <p id="ocr-status" class="hint" role="status" aria-live="polite"></p>
+  </section>
+</div>
+
+<section id="ocr-results" class="section" hidden aria-labelledby="ocr-results-title">
+  <h2 id="ocr-results-title">{{ t('Possible catalogue matches') }}</h2>
+  <p class="muted">{{ t('These are possibilities, not a finding. Nothing is selected automatically.') }}</p>
+  <ul id="ocr-candidates" class="match-list"></ul>
+</section>
+
+<section class="section">
+  <aside class="callout callout-warn">
+    <h2>{{ t('Medicine names, strengths and forms are only suggestions.') }}</h2>
+    <p>{{ t('A pharmacist must verify them. This tool does not interpret a prescription as permission to change treatment.') }}</p>
+  </aside>
+</section>
+
+<section class="section">
+  {{ safety_notice() }}
+</section>
+{% endblock %}

@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-30",
+  "medicines": {
+    "mode": "sample",
+    "name": "Bundled illustrative sample catalogue",
+    "description": "A small demonstration catalogue using well-known active ingredients and strengths. It exists to test search, matching and price-comparison flows. It is NOT an official PMBJP product list.",
+    "retrieved": null,
+    "price_policy": "All prices are illustrative sample values. None is an official Jan Aushadhi MRP. Every row sets jan_price_verified=0 and is_sample=1.",
+    "product_identifiers": "SAMPLE-001 to SAMPLE-054 are internal demonstration codes, not official product identifiers.",
+    "refresh": "Replace data/medicines.csv using scripts/import_catalogue.py with a documented source, retrieval date and permitted-use review. Then rebuild the database.",
+    "official_sources": [
+      "https://janaushadhi.gov.in/",
+      "https://janaushadhi.gov.in/download-link"
+    ]
+  },
+  "kendras": {
+    "mode": "sample",
+    "name": "Bundled illustrative sample Kendra records",
+    "description": "Fifteen records named explicitly as sample records. Names, addresses and telephone numbers are not real. Coordinates are city-centre points used only to demonstrate distance sorting.",
+    "retrieved": null,
+    "notice": "Do not present these records as real Kendras. Use https://janaushadhi.gov.in/locate-kendra to find an actual Kendra.",
+    "refresh": "Replace data/kendras.csv using scripts/import_catalogue.py only with an official, permitted dataset that includes source and retrieval metadata."
+  },
+  "official_links": [
+    {
+      "id": "home",
+      "label": "Official PMBJP website",
+      "url": "https://janaushadhi.gov.in/",
+      "note": "Official scheme website."
+    },
+    {
+      "id": "about",
+      "label": "About PMBJP",
+      "url": "https://janaushadhi.gov.in/about-pmbjb",
+      "note": "Official description of the scheme."
+    },
+    {
+      "id": "kendra",
+      "label": "Official Kendra locator",
+      "url": "https://janaushadhi.gov.in/locate-kendra",
+      "note": "Use this to confirm a real Kendra and its current details."
+    },
+    {
+      "id": "nearby-kendra",
+      "label": "Nearby Kendra search",
+      "url": "https://janaushadhi.gov.in/near-by-kendra",
+      "note": "Official location-based search."
+    },
+    {
+      "id": "distributor",
+      "label": "Official distributor locator",
+      "url": "https://janaushadhi.gov.in/locate-distributor",
+      "note": "Official distributor search."
+    },
+    {
+      "id": "pharmacist",
+      "label": "Pharmacist details",
+      "url": "https://janaushadhi.gov.in/near-by-pharma",
+      "note": "Official pharmacist search page."
+    },
+    {
+      "id": "downloads",
+      "label": "Official downloads and product lists",
+      "url": "https://janaushadhi.gov.in/download-link",
+      "note": "Check this page for currently published product and price documents."
+    },
+    {
+      "id": "faq",
+      "label": "Official FAQs",
+      "url": "https://janaushadhi.gov.in/faq",
+      "note": "Official scheme questions and answers."
+    },
+    {
+      "id": "apply",
+      "label": "Apply to open a Kendra",
+      "url": "https://janaushadhi.gov.in/apply-for-kendra",
+      "note": "Official application guidance."
+    },
+    {
+      "id": "complaints",
+      "label": "Kendra complaints and grievances",
+      "url": "https://janaushadhi.gov.in/kendra-complaints",
+      "note": "Official complaint channel."
+    },
+    {
+      "id": "contact",
+      "label": "Official contact information",
+      "url": "https://janaushadhi.gov.in/contact-us",
+      "note": "Official contact page and helpline details, where published."
+    },
+    {
+      "id": "media",
+      "label": "Public notices and media",
+      "url": "https://janaushadhi.gov.in/media",
+      "note": "Official notices and updates."
+    },
+    {
+      "id": "disclaimer",
+      "label": "Official disclaimer",
+      "url": "https://janaushadhi.gov.in/disclaimer",
+      "note": "Government website disclaimer."
+    }
+  ]
+}

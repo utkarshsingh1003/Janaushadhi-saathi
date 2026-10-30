@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ t('Janaushadhi Saathi') }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ t('Find affordable generic medicines and official Jan Aushadhi Kendra information.') }}{% endblock %}">
+  <meta name="theme-color" content="#0f5c4e">
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
+  <link rel="icon" href="{{ url_for('static', filename='icon.svg') }}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon-192.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <script type="application/json" id="app-i18n">{{ js_i18n|tojson }}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">{{ t('Skip to main content') }}</a>
+
+  <div class="top-strip">
+    <div class="container top-strip-inner">
+      <span class="dot" aria-hidden="true"></span>
+      {% if data_summary.mode == 'verified' %}
+        <span>{{ t('Verified') }} · {{ t('Last updated') }} {{ data_summary.loaded_at|dateonly }}</span>
+      {% else %}
+        <span><strong>{{ t('Sample data') }}</strong> — {{ t('Not official data') }}.</span>
+      {% endif %}
+      <a href="{{ url_for('about') }}#data">{{ t('Data status') }}</a>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="{{ url_for('home') }}">
+        <img src="{{ url_for('static', filename='icon.svg') }}" alt="" width="38" height="38">
+        <span class="brand-text">
+          <strong>{{ t('Janaushadhi Saathi') }}</strong>
+          <small>{{ t('Public medicine information, clearly explained') }}</small>
+        </span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="{{ t('Main navigation') }}">
+        <a href="{{ url_for('search') }}" {% if endpoint_active('search','medicine_detail') %}aria-current="page"{% endif %}>{{ t('Medicines') }}</a>
+        <a href="{{ url_for('compare_index') }}" {% if endpoint_active('compare_index','compare_detail') %}aria-current="page"{% endif %}>{{ t('Compare prices') }}</a>
+        <a href="{{ url_for('savings') }}" {% if endpoint_active('savings') %}aria-current="page"{% endif %}>{{ t('Savings') }}</a>
+        <a href="{{ url_for('kendra') }}" {% if endpoint_active('kendra') %}aria-current="page"{% endif %}>{{ t('Kendra locator') }}</a>
+        <a href="{{ url_for('ocr_page') }}" {% if endpoint_active('ocr_page') %}aria-current="page"{% endif %}>{{ t('Scan a prescription') }}</a>
+        <a href="{{ url_for('learn') }}" {% if endpoint_active('learn') %}aria-current="page"{% endif %}>{{ t('Learn') }}</a>
+        <a href="{{ url_for('resources') }}" {% if endpoint_active('resources') %}aria-current="page"{% endif %}>{{ t('Official resources') }}</a>
+      </nav>
+
+      <div class="header-actions">
+        <a class="lang-switch" href="{{ url_for('set_language', lang=('en' if lang == 'hi' else 'hi'), next=current_path) }}" hreflang="{{ 'en' if lang == 'hi' else 'hi' }}">
+          <span aria-hidden="true">अ</span> {{ t('English') if lang == 'hi' else t('Hindi') }}
+        </a>
+        <details class="mobile-nav">
+          <summary>{{ t('Menu') }}</summary>
+          <nav aria-label="{{ t('Main navigation') }}">
+            <a href="{{ url_for('home') }}">{{ t('Home') }}</a>
+            <a href="{{ url_for('search') }}">{{ t('Medicines') }}</a>
+            <a href="{{ url_for('compare_index') }}">{{ t('Compare prices') }}</a>
+            <a href="{{ url_for('savings') }}">{{ t('Savings') }}</a>
+            <a href="{{ url_for('kendra') }}">{{ t('Kendra locator') }}</a>
+            <a href="{{ url_for('ocr_page') }}">{{ t('Scan a prescription') }}</a>
+            <a href="{{ url_for('learn') }}">{{ t('Learn') }}</a>
+            <a href="{{ url_for('resources') }}">{{ t('Official resources') }}</a>
+            <a href="{{ url_for('faq') }}">{{ t('FAQ') }}</a>
+            <a href="{{ url_for('help_page') }}">{{ t('Help') }}</a>
+          </nav>
+        </details>
+      </div>
+    </div>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container flash-stack" role="status">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'error' if category == 'error' else 'info' }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main id="main" class="container page">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <p class="footer-brand">{{ t('Janaushadhi Saathi') }}</p>
+        <p class="muted">{{ t('An independent citizen information project') }}. {{ t('This site is not a government application.') }}</p>
+        <p class="small">{{ t('Medical disclaimer') }}: {{ t('This is an independent information tool. It is not a government app and does not provide medical advice, diagnosis or treatment. Always follow your prescription and consult a qualified doctor or pharmacist.') }}</p>
+      </div>
+      <nav aria-label="{{ t('Footer navigation') }}">
+        <p class="footer-heading">{{ t('Help') }}</p>
+        <a href="{{ url_for('faq') }}">{{ t('FAQ') }}</a>
+        <a href="{{ url_for('help_page') }}">{{ t('Help') }}</a>
+        <a href="{{ url_for('about') }}">{{ t('About') }}</a>
+        <a href="{{ url_for('privacy') }}">{{ t('Privacy') }}</a>
+      </nav>
+      <nav aria-label="{{ t('Official resources') }}">
+        <p class="footer-heading">{{ t('Official resources') }}</p>
+        <a href="https://janaushadhi.gov.in/" target="_blank" rel="noopener noreferrer">{{ t('Official website') }}</a>
+        <a href="https://janaushadhi.gov.in/locate-kendra" target="_blank" rel="noopener noreferrer">{{ t('Kendra locator') }}</a>
+        <a href="https://janaushadhi.gov.in/download-link" target="_blank" rel="noopener noreferrer">{{ t('Product and MRP information') }}</a>
+      </nav>
+    </div>
+    <div class="container footer-bottom">
+      <span>v{{ app_version }} · {{ t('Prices, stock and Kendra details are not real-time.') }}</span>
+      <a href="#main">{{ t('Back to top') }}</a>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</body>
+</html>

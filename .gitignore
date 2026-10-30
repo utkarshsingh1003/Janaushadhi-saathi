@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime data (never commit user submissions or local databases)
+instance/
+*.db
+*.sqlite
+*.sqlite3
+data/import_log.jsonl
+data/*.backup-*
+
+# Temporary uploads (the app processes images in memory, but keep this safe)
+uploads/
+tmp/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

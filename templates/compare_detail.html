@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% from "_macros.html" import price_status, sample_badge, safety_notice with context %}
+
+{% block title %}{{ t('Price comparison') }} · {{ medicine.generic_name }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('compare_index') }}">← {{ t('Compare prices') }}</a></nav>
+
+<header class="page-head">
+  <p class="eyebrow">{{ t('Price comparison') }}</p>
+  <h1>{{ medicine.generic_name }} <span class="strength">{{ medicine.strength }}</span></h1>
+  <p class="muted">{{ medicine.composition }} · {{ medicine.dosage_form|formlabel }} · {{ medicine.pack_size|int if medicine.pack_size == medicine.pack_size|int else medicine.pack_size }} {{ medicine.pack_unit }} {{ t('per') }} {{ t('pack') }}</p>
+  <div class="badge-row">
+    {{ sample_badge(medicine) }}
+    {{ price_status(medicine) }}
+  </div>
+</header>
+
+{% if medicine.is_sample %}
+  <aside class="callout callout-warn">
+    <p><strong>{{ t('Sample data') }}.</strong> {{ t('Jan Aushadhi medicine prices shown here are sample values, not verified official MRPs.') }}</p>
+  </aside>
+{% endif %}
+
+<div class="compare-layout">
+  <section class="card" aria-labelledby="compare-form-title">
+    <h2 id="compare-form-title">{{ t('Calculate comparison') }}</h2>
+    {% if error %}
+      <div class="alert alert-error" role="alert">{{ error }}</div>
+    {% endif %}
+    <form method="post" action="{{ url_for('compare_detail', medicine_id=medicine.id) }}" class="stack-form" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="field">
+        <label for="brand_price">{{ t('Branded price you paid or saw') }} (₹) <span class="req">{{ t('Required') }}</span></label>
+        <input id="brand_price" name="brand_price" type="text" inputmode="decimal" required
+               value="{{ form_values.brand_price }}" placeholder="e.g. 45.00" aria-describedby="brand-price-hint">
+        <p id="brand-price-hint" class="hint">{{ t('Enter the price of one branded pack, not a single tablet.') }}</p>
+      </div>
+      <div class="two-col">
+        <div class="field">
+          <label for="brand_pack_size">{{ t('Brand pack size') }}</label>
+          <input id="brand_pack_size" name="brand_pack_size" type="text" inputmode="decimal"
+                 value="{{ form_values.brand_pack_size }}" placeholder="{{ medicine.pack_size|int if medicine.pack_size == medicine.pack_size|int else medicine.pack_size }}">
+          <p class="hint">{{ t('Units in the branded pack, in the same unit as the catalogue.') }}</p>
+        </div>
+        <div class="field">
+          <label for="quantity">{{ t('How many units do you buy at a time?') }}</label>
+          <input id="quantity" name="quantity" type="number" min="1" max="10000" step="1" required value="{{ form_values.quantity }}">
+        </div>
+      </div>
+      <div class="field">
+        <label for="purchases_per_month">{{ t('Purchases per month') }}</label>
+        <input id="purchases_per_month" name="purchases_per_month" type="number" min="1" max="100" step="1" value="{{ form_values.purchases_per_month }}">
+      </div>
+      <button class="btn btn-primary" type="submit">{{ t('Calculate comparison') }}</button>
+    </form>
+  </section>
+
+  <section class="card" aria-labelledby="result-title" aria-live="polite">
+    <h2 id="result-title">{{ t('Price comparison') }}</h2>
+    {% if comparison %}
+      {% if comparison.comparison_available %}
+        <div class="compare-result">
+          <div class="compare-row">
+            <span>{{ t('Branded price you entered') }}</span>
+            <strong>{{ comparison.brand_price_paise|inr }}</strong>
+          </div>
+          <div class="compare-row">
+            <span>{{ t('Generic catalogue price') }}</span>
+            <strong>{{ comparison.catalogue_price_paise|inr }}</strong>
+            <span class="badge {{ 'badge-ok' if comparison.price_verified else 'badge-warn' }}">{{ t('Verified') if comparison.price_verified else t('Sample data') }}</span>
+          </div>
+          <div class="compare-row">
+            <span>{{ t('Price per unit') }}</span>
+            <span>{{ comparison.brand_per_unit_paise|inr }} → {{ comparison.catalogue_per_unit_paise|inr }}</span>
+          </div>
+          <div class="compare-row">
+            <span>{{ t('Estimated spend on branded') }}</span>
+            <strong>{{ comparison.brand_total_paise|inr }}</strong>
+          </div>
+          <div class="compare-row">
+            <span>{{ t('Estimated spend on generic') }}</span>
+            <strong>{{ comparison.catalogue_total_paise|inr }}</strong>
+          </div>
+          <div class="compare-row compare-total">
+            <span>{{ t('Estimated difference') }}</span>
+            <strong>{{ comparison.difference_paise|inr }} ({{ comparison.difference_percent }}%)</strong>
+          </div>
+          <div class="compare-row">
+            <span>{{ t('Estimated monthly difference') }}</span>
+            <span>{{ comparison.monthly_difference_paise|inr }}</span>
+          </div>
+          <div class="compare-row">
+            <span>{{ t('Estimated yearly difference') }}</span>
+            <span>{{ comparison.yearly_difference_paise|inr }}</span>
+          </div>
+          <p class="hint">{{ t('estimated, not verified')|capitalize }}</p>
+        </div>
+
+        {% if comparison.warnings %}
+          <div class="alert alert-warn" role="note">
+            {% for warning in comparison.warnings %}<p>{{ warning }}</p>{% endfor %}
+          </div>
+        {% endif %}
+
+        <h3>{{ t('Comparison assumptions') }}</h3>
+        <ul class="small">
+          {% for assumption in comparison.assumptions %}<li>{{ assumption }}</li>{% endfor %}
+        </ul>
+
+        <div class="card-actions">
+          <button class="btn btn-secondary" type="button"
+                  data-add-comparison
+                  data-medicine-id="{{ medicine.id }}"
+                  data-medicine-name="{{ medicine.generic_name }} {{ medicine.strength }}"
+                  data-brand-price="{{ form_values.brand_price }}"
+                  data-brand-pack-size="{{ comparison.brand_pack_size }}"
+                  data-quantity="{{ comparison.quantity }}"
+                  data-purchases="{{ comparison.purchases_per_month }}"
+                  data-unit="{{ medicine.pack_unit }}">
+            {{ t('Add to comparison list') }}
+          </button>
+          <a class="btn btn-quiet" href="{{ url_for('savings') }}">{{ t('Savings') }} →</a>
+        </div>
+      {% else %}
+        <div class="empty-state compact">
+          <h3>{{ t('Comparison unavailable') }}</h3>
+          <p>{{ t('The catalogue price for this medicine is missing, so no comparison can be made.') }}</p>
+        </div>
+      {% endif %}
+    {% else %}
+      <p class="empty-inline">{{ t('Enter the branded price to see a comparison.') }}</p>
+      <p class="small">{{ t('This is an estimate, not a quote. Local selling prices, taxes, stock and pack sizes can differ.') }}</p>
+    {% endif %}
+  </section>
+</div>
+
+<section class="section">
+  <h2>{{ t('Comparison assumptions') }}</h2>
+  <ul class="small">
+    <li>{{ t('Both prices are converted to a price per unit before multiplying by the quantity you entered.') }}</li>
+    <li>{{ t('This is an estimate, not a quote. Local selling prices, taxes, stock and pack sizes can differ.') }}</li>
+    <li>{{ t('Jan Aushadhi medicine prices shown here are sample values, not verified official MRPs.') }}</li>
+    <li>{{ t('This comparison does not confirm that the medicines are interchangeable for you. Ask a pharmacist or doctor.') }}</li>
+  </ul>
+</section>
+
+<section class="section">
+  {{ safety_notice() }}
+</section>
+{% endblock %}

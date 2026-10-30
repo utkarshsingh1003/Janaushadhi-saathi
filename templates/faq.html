@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% from "_macros.html" import safety_notice with context %}
+
+{% block title %}{{ t('FAQ') }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{{ t('FAQ') }}</p>
+  <h1>{{ t('Frequently asked questions') }}</h1>
+</header>
+
+<div class="faq-list">
+  <details>
+    <summary>{% if lang == 'hi' %}क्या यह सरकारी ऐप है?{% else %}Is this a government app?{% endif %}</summary>
+    {% if lang == 'hi' %}
+      <p>नहीं। यह एक स्वतंत्र सूचना परियोजना है। यह पीएमबीजेपी या पीएमबीआई से संबद्ध नहीं है और सरकारी ऐप होने का दावा नहीं करती। आधिकारिक जानकारी के लिए janaushadhi.gov.in देखें।</p>
+    {% else %}
+      <p>No. This is an independent information project. It is not affiliated with PMBJP or PMBI and does not claim to be a government application. For official information, use janaushadhi.gov.in.</p>
+    {% endif %}
+  </details>
+
+  <details>
+    <summary>{% if lang == 'hi' %}दिखाई गई कीमतें आधिकारिक हैं?{% else %}Are the prices official?{% endif %}</summary>
+    {% if lang == 'hi' %}
+      <p>इस संस्करण में दवाओं की कीमतें नमूना हैं और आधिकारिक एमआरपी नहीं हैं। हर कीमत के साथ “नमूना डेटा” या “सत्यापित नहीं” दिखाया जाता है। आधिकारिक उत्पाद और एमआरपी सूची के लिए पीएमबीजेपी की डाउनलोड या उत्पाद पृष्ठ देखें।</p>
+    {% else %}
+      <p>The medicine prices in this build are sample values, not official MRPs. Each price is labelled “Sample data” or “Not verified”. For official product and MRP lists, use the PMBJP downloads or product pages.</p>
+    {% endif %}
+  </details>
+
+  <details>
+    <summary>{% if lang == 'hi' %}क्या मैं इस साइट से दवा खरीद सकता हूँ?{% else %}Can I buy medicines through this site?{% endif %}</summary>
+    {% if lang == 'hi' %}
+      <p>नहीं। यह कोई ऑनलाइन दुकान नहीं है। यह ऑर्डर, होम डिलीवरी या भुगतान नहीं करता। दवा के लिए किसी वैध फार्मेसी या जन औषधि केंद्र से संपर्क करें।</p>
+    {% else %}
+      <p>No. This is not an online shop. It does not take orders, arrange home delivery or process payments. For medicines, use a lawful pharmacy or Jan Aushadhi Kendra.</p>
+    {% endif %}
+  </details>
+
+  <details>
+    <summary>{% if lang == 'hi' %}क्या यह बता सकता है कि कौन-सी दवा मेरे लिए सही है?{% else %}Can it tell me which medicine is right for me?{% endif %}</summary>
+    {% if lang == 'hi' %}
+      <p>नहीं। यह निदान, खुराक या इलाज की सलाह नहीं देता। अपनी पर्ची का पालन करें और योग्य डॉक्टर या फार्मासिस्ट से सलाह लें।</p>
+    {% else %}
+      <p>No. It does not diagnose, prescribe or advise on treatment. Follow your prescription and consult a qualified doctor or pharmacist.</p>
+    {% endif %}
+  </details>
+
+  <details>
+    <summary>{% if lang == 'hi' %}दो दवाएँ एक जैसी क्यों नहीं दिख रहीं, जबकि नाम मिलता है?{% else %}Why are two similarly named medicines not shown as a match?{% endif %}</summary>
+    {% if lang == 'hi' %}
+      <p>क्योंकि मिलान केवल नाम से नहीं होता। संघटन, मात्रा, दवा का रूप, मार्ग और रिलीज़ प्रकार भी जाँचे जाते हैं। अलग मात्रा या अलग रिलीज़ प्रकार को सुरक्षा कारण से अस्वीकार किया जाता है।</p>
+    {% else %}
+      <p>Because matching is not based on the name alone. Composition, strength, dosage form, route and release type are also checked. A different strength or release mechanism is rejected for safety.</p>
+    {% endif %}
+  </details>
+
+  <details>
+    <summary>{% if lang == 'hi' %}केंद्र का पता और फ़ोन नंबर कहाँ से आया?{% else %}Where do Kendra addresses and phone numbers come from?{% endif %}</summary>
+    {% if lang == 'hi' %}
+      <p>इस संस्करण में केंद्र रिकॉर्ड नमूना हैं; वे असली पते या फ़ोन नंबर नहीं हैं। असली केंद्र की पुष्टि के लिए आधिकारिक लोकेटर का उपयोग करें।</p>
+    {% else %}
+      <p>Kendra records in this build are samples; they are not real addresses or phone numbers. Use the official locator to confirm a real Kendra.</p>
+    {% endif %}
+  </details>
+
+  <details>
+    <summary>{% if lang == 'hi' %}मेरी अपलोड की गई पर्ची कहाँ जाती है?{% else %}What happens to a prescription image I upload?{% endif %}</summary>
+    {% if lang == 'hi' %}
+      <p>छवि केवल मेमोरी में संसाधित होती है और सहेजी नहीं जाती। निकाला गया टेक्स्ट भी मेडिकल इतिहास के रूप में संग्रहीत नहीं होता। कृपया संवेदनशील जानकारी वाली पर्ची अपलोड न करें।</p>
+    {% else %}
+      <p>The image is processed in memory only and is not saved. Extracted text is not stored as a medical history. Please do not upload a prescription containing sensitive information you do not want processed.</p>
+    {% endif %}
+  </details>
+
+  <details>
+    <summary>{% if lang == 'hi' %}गलत जानकारी कैसे बताएँ?{% else %}How do I report incorrect information?{% endif %}</summary>
+    {% if lang == 'hi' %}
+      <p><a href="{{ url_for('help_page') }}">सहायता पृष्ठ</a> पर रिपोर्ट फ़ॉर्म का उपयोग करें। पर्ची या व्यक्तिगत चिकित्सा जानकारी न भेजें।</p>
+    {% else %}
+      <p>Use the report form on the <a href="{{ url_for('help_page') }}">Help page</a>. Do not include prescription details or personal medical information.</p>
+    {% endif %}
+  </details>
+
+  <details>
+    <summary>{% if lang == 'hi' %}क्या मुझे लॉगिन करना होगा?{% else %}Do I need an account?{% endif %}</summary>
+    {% if lang == 'hi' %}
+      <p>नहीं। खोज, तुलना और केंद्र देखने के लिए लॉगिन की आवश्यकता नहीं है। हम आपका नाम, फ़ोन नंबर या मेडिकल रिकॉर्ड नहीं माँगते।</p>
+    {% else %}
+      <p>No. Search, comparison and Kendra pages require no login. We do not ask for your name, phone number or medical records.</p>
+    {% endif %}
+  </details>
+</div>
+
+<section class="section">
+  {{ safety_notice() }}
+</section>
+{% endblock %}

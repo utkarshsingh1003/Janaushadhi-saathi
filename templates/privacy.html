@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('Privacy') }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{{ t('Privacy') }}</p>
+  <h1>{% if lang == 'hi' %}गोपनीयता और डेटा{% else %}Privacy and data{% endif %}</h1>
+  <p class="lede">
+    {% if lang == 'hi' %}
+      यह साइट जितना कम डेटा ज़रूरी है, उतना ही रखती है। खोज और तुलना के लिए खाता नहीं चाहिए।
+    {% else %}
+      This site keeps as little data as possible. Search and comparison need no account.
+    {% endif %}
+  </p>
+</header>
+
+<div class="prose-grid">
+  <section class="card">
+    <h2>{% if lang == 'hi' %}हम क्या एकत्र नहीं करते{% else %}What we do not collect{% endif %}</h2>
+    <ul>
+      {% if lang == 'hi' %}
+        <li>नाम, फ़ोन नंबर, ईमेल या पता — जब तक आप रिपोर्ट फ़ॉर्म में स्वेच्छा से न दें।</li>
+        <li>मेडिकल इतिहास, निदान, पर्ची या दवा का रिकॉर्ड।</li>
+        <li>अपलोड की गई पर्ची की छवि या उससे निकाला गया टेक्स्ट।</li>
+        <li>विज्ञापन ट्रैकर या तृतीय-पक्ष विश्लेषण।</li>
+      {% else %}
+        <li>Name, phone, email or address — unless you choose to provide them in the report form.</li>
+        <li>Medical history, diagnosis, prescriptions or medicine records.</li>
+        <li>Uploaded prescription images or extracted OCR text.</li>
+        <li>Advertising trackers or third-party analytics.</li>
+      {% endif %}
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>{% if lang == 'hi' %}स्थानीय रूप से सहेजी गई बातें{% else %}Stored in your browser{% endif %}</h2>
+    {% if lang == 'hi' %}
+      <p>भाषा की पसंद कुकी में रहती है। सुरक्षा टोकन सत्र कुकी में रहता है। बचत सूची केवल इस ब्राउज़र के localStorage में रहती है और सर्वर पर नहीं भेजी जाती।</p>
+      <p>आप ब्राउज़र डेटा साफ़ करके इन्हें कभी भी हटा सकते हैं। “मेरी सूची साफ़ करें” बटन बचत सूची हटा देता है।</p>
+    {% else %}
+      <p>Your language choice is stored in a cookie. A security token is stored in a session cookie. The savings list lives only in this browser's localStorage and is never sent to the server.</p>
+      <p>You can remove these at any time by clearing browser data. The “Clear my list” button removes the savings list.</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>{% if lang == 'hi' %}पर्ची की छवियाँ{% else %}Prescription images{% endif %}</h2>
+    {% if lang == 'hi' %}
+      <p>छवि सर्वर की मेमोरी में संसाधित होती है और अनुरोध पूरा होने के बाद सहेजी नहीं जाती। OCR टेक्स्ट लॉग में नहीं लिखा जाता। हम केवल टेक्स्ट निकालते हैं; निदान या सिफ़ारिश नहीं करते।</p>
+    {% else %}
+      <p>The image is processed in server memory and is not saved after the request completes. OCR text is not written to logs. We only extract text; we do not diagnose or recommend treatment.</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>{% if lang == 'hi' %}रिपोर्ट और अवधि{% else %}Reports and retention{% endif %}</h2>
+    {% if lang == 'hi' %}
+      <p>रिपोर्ट फ़ॉर्म से भेजा गया संदेश, चुनी गई श्रेणी, पृष्ठ और वैकल्पिक संपर्क विवरण SQLite डेटाबेस में अधिकतम 365 दिन रखा जाता है। 365 दिन से पुरानी प्रविष्टियाँ ऐप शुरू होने पर हटा दी जाती हैं। IP पता संदेश के साथ नहीं रखा जाता। कृपया पर्ची या निजी चिकित्सा जानकारी न लिखें।</p>
+    {% else %}
+      <p>A report message, category, page and optional contact detail are stored in a SQLite database for up to 365 days. Entries older than 365 days are deleted when the app starts. The IP address is not stored with the message. Please do not include prescriptions or personal medical information.</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>{% if lang == 'hi' %}होस्टिंग और लॉग{% else %}Hosting and logs{% endif %}</h2>
+    {% if lang == 'hi' %}
+      <p>होस्टिंग प्रदाता तकनीकी रूप से अनुरोध का IP पता और समय देख सकता है। एप्लिकेशन लॉग में केवल HTTP विधि, पथ, स्थिति और समय होता है — खोज शब्द, पर्ची टेक्स्ट या फ़ॉर्म सामग्री नहीं।</p>
+      <p>बाहरी सरकारी लिंक और OpenStreetMap नक्शा केवल तब खुलते हैं जब आप उन पर क्लिक करते हैं। उनकी अपनी गोपनीयता नीतियाँ लागू होती हैं।</p>
+    {% else %}
+      <p>The hosting provider can technically see request IP addresses and times. Application logs contain only the HTTP method, path, status and duration — never search terms, prescription text or form content.</p>
+      <p>External government links and OpenStreetMap maps open only when you choose them. Their own privacy policies apply.</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>{% if lang == 'hi' %}कोई कानूनी अनुपालन का दावा नहीं{% else %}No compliance claim{% endif %}</h2>
+    <p>{% if lang == 'hi' %}यह पृष्ठ सामान्य पारदर्शिता के लिए है। यह किसी विशेष कानून या नियामक मानक के अनुपालन का दावा नहीं करता।{% else %}This page is for general transparency. It does not claim compliance with any specific law or regulatory standard.{% endif %}</p>
+  </section>
+</div>
+{% endblock %}

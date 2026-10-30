@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% from "_macros.html" import safety_notice with context %}
+
+{% block title %}{{ t('About') }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{{ t('About') }}</p>
+  <h1>{{ t('About Janaushadhi Saathi') }}</h1>
+  <p class="lede">
+    {% if lang == 'hi' %}
+      भारतीय नागरिकों के लिए जेनेरिक दवाइयों, कीमतों और जन औषधि केंद्रों की सार्वजनिक जानकारी को सरल और ईमानदार तरीके से समझाने की एक स्वतंत्र परियोजना।
+    {% else %}
+      An independent project that makes public information about generic medicines, prices and Jan Aushadhi Kendras easier to understand.
+    {% endif %}
+  </p>
+</header>
+
+<div class="prose-grid">
+  <section class="card">
+    <h2>{% if lang == 'hi' %}हमारा उद्देश्य{% else %}Our purpose{% endif %}</h2>
+    {% if lang == 'hi' %}
+      <p>किफायती जेनेरिक दवाइयाँ खोजना, सही संघटन और मात्रा समझना, ब्रांड और जेनेरिक कीमत की सावधानीपूर्वक तुलना करना, और आधिकारिक जन औषधि केंद्र की जानकारी तक पहुँचना आसान बनाना।</p>
+      <p>हम जानकारी को उसके स्रोत और सत्यापन स्थिति के साथ दिखाते हैं। नमूना डेटा को कभी आधिकारिक नहीं बताया जाता।</p>
+    {% else %}
+      <p>To make it easier to find affordable generic medicines, understand composition and strength, compare a branded price carefully, and reach official Jan Aushadhi Kendra information.</p>
+      <p>We show information with its source and verification status. Sample data is never labelled official.</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>{% if lang == 'hi' %}स्वतंत्रता की स्पष्टता{% else %}Independence{% endif %}</h2>
+    <p>{{ t('This site is not a government application.') }}</p>
+    {% if lang == 'hi' %}
+      <p>यह परियोजना पीएमबीजेपी, पीएमबीआई या किसी सरकारी विभाग से संबद्ध, अनुमोदित या प्रायोजित नहीं है। “जन औषधि” और “पीएमबीजेपी” संबंधित योजना के नाम हैं; उनका उपयोग केवल जानकारी देने के लिए किया गया है।</p>
+    {% else %}
+      <p>This project is not affiliated with, endorsed by or sponsored by PMBJP, PMBI or any government department. “Jan Aushadhi” and “PMBJP” refer to the scheme; they are used only to describe public information.</p>
+    {% endif %}
+  </section>
+
+  <section class="card" id="data">
+    <h2>{{ t('Catalogue and data sources') }}</h2>
+    {% if summary.mode == 'verified' %}
+      <p class="badge badge-ok">{{ t('Verified') }}</p>
+    {% else %}
+      <p class="badge badge-warn">{{ t('Sample data') }}</p>
+    {% endif %}
+    <p>{{ t('This deployment uses a bundled illustrative sample catalogue. No price, Kendra location or product identifier is claimed to be official.') }}</p>
+    <dl class="detail-list compact">
+      <div><dt>{{ t('Medicines listed') }}</dt><dd>{{ summary.medicines }}</dd></div>
+      <div><dt>{{ t('Kendra records') }}</dt><dd>{{ summary.kendras }}</dd></div>
+      <div><dt>{{ t('Data mode') }}</dt><dd>{{ summary.mode|formlabel }}</dd></div>
+      <div><dt>{{ t('Last updated') }}</dt><dd>{{ summary.loaded_at|dateonly or t('Unavailable') }}</dd></div>
+    </dl>
+    <p>{{ t('To refresh data, an administrator must import a validated file with its source and retrieval date. See the project documentation.') }}</p>
+    <p><a class="text-link" href="{{ url_for('resources') }}">{{ t('Official PMBJP resources') }} →</a></p>
+  </section>
+
+  <section class="card">
+    <h2>{% if lang == 'hi' %}जानबूझकर न की गई बातें{% else %}Deliberate limits{% endif %}</h2>
+    <ul>
+      {% if lang == 'hi' %}
+        <li>कोई लॉगिन, रोगी खाता या मेडिकल रिकॉर्ड नहीं।</li>
+        <li>कोई निदान, खुराक या इलाज की सलाह नहीं।</li>
+        <li>कोई दवा ऑर्डर, भुगतान या होम डिलीवरी नहीं।</li>
+        <li>कोई रीयल-टाइम स्टॉक, कीमत या सरकारी एकीकरण का दावा नहीं।</li>
+        <li>कोई अनुमानित केन्द्र पता, फ़ोन नंबर या निर्देशांक नहीं।</li>
+      {% else %}
+        <li>No login, patient account or medical record.</li>
+        <li>No diagnosis, dosage or treatment advice.</li>
+        <li>No medicine ordering, payment or home delivery.</li>
+        <li>No claim of real-time stock, pricing or government integration.</li>
+        <li>No invented Kendra address, telephone number or coordinates.</li>
+      {% endif %}
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>{% if lang == 'hi' %}तकनीक{% else %}Technology{% endif %}</h2>
+    <p>{% if lang == 'hi' %}फ्लास्क, एसक्यूएलाइट, रैपिडफ़ज़, पिलो और टेसेरैक्ट। सर्वर-रेंडर किए गए पृष्ठ कम नेटवर्क पर भी काम करते हैं। कोई विज्ञापन ट्रैकर या तृतीय-पक्ष विश्लेषण नहीं।{% else %}Flask, SQLite, RapidFuzz, Pillow and Tesseract. Server-rendered pages work on slow networks. No advertising trackers or third-party analytics.{% endif %}</p>
+    <p class="small">v{{ app_version }}</p>
+  </section>
+</div>
+
+<section class="section">
+  {{ safety_notice() }}
+</section>
+{% endblock %}

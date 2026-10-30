@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pagination, sample_badge with context %}
+
+{% block title %}{{ t('Find a Jan Aushadhi Kendra') }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{{ t('Kendra locator') }}</p>
+  <h1>{{ t('Find a Jan Aushadhi Kendra') }}</h1>
+  <p class="lede">{{ t('Search by state, district, city, PIN code or Kendra code.') }}</p>
+</header>
+
+<aside class="callout callout-warn">
+  <p><strong>{{ t('Sample data') }}.</strong> {{ t('Kendra records in this build are illustrative samples. Use the official locator to confirm a real Kendra.') }}</p>
+  <p><a class="text-link" href="https://janaushadhi.gov.in/locate-kendra" target="_blank" rel="noopener noreferrer">{{ t('Use the official Kendra locator') }} ↗</a></p>
+</aside>
+
+<form class="filter-bar" action="{{ url_for('kendra') }}" method="get" role="search">
+  <div class="field">
+    <label for="state">{{ t('State') }}</label>
+    <select id="state" name="state">
+      <option value="">—</option>
+      {% for state in facets.states %}
+        <option value="{{ state }}" {% if filters.state == state %}selected{% endif %}>{{ state }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="district">{{ t('District') }}</label>
+    <input id="district" name="district" type="text" list="district-options" maxlength="80" value="{{ filters.district }}">
+    <datalist id="district-options">
+      {% for item in facets.districts %}<option value="{{ item.district }}">{{ item.state }}</option>{% endfor %}
+    </datalist>
+  </div>
+  <div class="field">
+    <label for="city">{{ t('City') }}</label>
+    <input id="city" name="city" type="text" maxlength="80" value="{{ filters.city }}">
+  </div>
+  <div class="field">
+    <label for="pincode">{{ t('PIN code') }}</label>
+    <input id="pincode" name="pincode" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" value="{{ filters.pincode }}">
+  </div>
+  <div class="field">
+    <label for="kendra_code">{{ t('Kendra code') }}</label>
+    <input id="kendra_code" name="kendra_code" type="text" maxlength="40" value="{{ filters.kendra_code }}">
+  </div>
+  <div class="field field-grow">
+    <label for="kendra-q">{{ t('Locality or address') }}</label>
+    <input id="kendra-q" name="q" type="search" maxlength="120" value="{{ filters.q }}">
+  </div>
+  <div class="filter-actions">
+    <button class="btn btn-primary" type="submit">{{ t('Apply filters') }}</button>
+    <a class="btn btn-quiet" href="{{ url_for('kendra') }}">{{ t('Clear filters') }}</a>
+  </div>
+</form>
+
+<div class="location-bar">
+  <button class="btn btn-secondary" type="button" data-nearby-kendra>{{ t('Use my location') }}</button>
+  <p class="hint">{{ t('Your location is used only in this request and is not stored.') }}</p>
+</div>
+
+<section id="nearby-section" class="section" hidden aria-labelledby="nearby-title">
+  <h2 id="nearby-title">{{ t('Nearby sample records') }}</h2>
+  <p id="nearby-status" class="hint" role="status" aria-live="polite"></p>
+  <ul id="nearby-results" class="result-list"></ul>
+</section>
+
+<div class="result-summary" role="status">
+  <p><strong>{{ total }}</strong> {{ t('results') if total != 1 else t('result') }}</p>
+</div>
+
+{% if kendras %}
+  <ul class="result-list">
+    {% for kendra in kendras %}
+      <li class="result-card kendra-card">
+        <div class="result-main">
+          <div class="result-title">
+            <h2>{{ kendra.name }}</h2>
+            {{ sample_badge(kendra) }}
+          </div>
+          <p class="small"><strong>{{ t('Kendra code') }}:</strong> <code>{{ kendra.kendra_code }}</code></p>
+          <p>{{ kendra.address }}</p>
+          <p class="muted">{{ kendra.locality }}{% if kendra.locality %}, {% endif %}{{ kendra.city }}, {{ kendra.district }}, {{ kendra.state }} — {{ kendra.pincode }}</p>
+          <p class="small">
+            <strong>{{ t('Contact') }}:</strong>
+            {% if kendra.phone %}{{ kendra.phone }}{% else %}{{ t('Phone number not available in this record.') }}{% endif %}
+          </p>
+          <p class="small">{{ t('Opening hours and stock are not verified. Call the Kendra before travelling.') }}</p>
+          {% if kendra.source_name %}
+            <p class="small muted">{{ t('Source') }}: {{ kendra.source_name }}{% if kendra.last_verified %} · {{ t('Last updated') }} {{ kendra.last_verified|dateonly }}{% endif %}</p>
+          {% endif %}
+        </div>
+        <div class="result-side">
+          {% if kendra.latitude is not none and kendra.longitude is not none %}
+            <a class="btn btn-secondary" href="{{ directions_link(kendra.latitude, kendra.longitude) }}" target="_blank" rel="noopener noreferrer">{{ t('Open directions') }} ↗</a>
+            <a class="text-link small" href="{{ osm_link(kendra.latitude, kendra.longitude) }}" target="_blank" rel="noopener noreferrer">{{ t('View map') }} ↗</a>
+            <p class="small muted">{{ t('Approximate distance from the city-centre coordinates in this sample record.') }}</p>
+            <details class="map-details">
+              <summary>{{ t('View map') }}</summary>
+              <iframe src="{{ osm_embed(kendra.latitude, kendra.longitude) }}" width="320" height="240"
+                      title="{{ t('View map') }} — OpenStreetMap" loading="lazy"></iframe>
+              <p class="small">{{ t('Map data © OpenStreetMap contributors') }}</p>
+            </details>
+          {% else %}
+            <p class="small">{{ t('Unavailable') }}</p>
+          {% endif %}
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+  {{ pagination(page, pages) }}
+{% else %}
+  <section class="empty-state" aria-labelledby="kendra-empty-title">
+    <h2 id="kendra-empty-title">{{ t('No Kendra matched these filters.') }}</h2>
+    <p>{{ t('Try a nearby district, a shorter locality, or the official locator.') }}</p>
+    <a class="btn btn-secondary" href="{{ url_for('kendra') }}">{{ t('Clear filters') }}</a>
+  </section>
+{% endif %}
+
+<section class="section">
+  <h2>{{ t('Stock and availability') }}</h2>
+  <p>{{ t('This site cannot check whether a Kendra is open or has a medicine in stock. Contact the Kendra before travelling.') }}</p>
+  <p class="small">{{ t('Do not assume a Kendra is open or has a medicine in stock without reliable current evidence.') }}</p>
+</section>
+{% endblock %}

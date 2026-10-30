@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('Offline') }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{{ t('Offline') }}</p>
+  <h1>{% if lang == 'hi' %}आप ऑफ़लाइन हैं{% else %}You are offline{% endif %}</h1>
+  <p class="lede">
+    {% if lang == 'hi' %}
+      इंटरनेट कनेक्शन नहीं मिल रहा। कैश किए गए पृष्ठ दिख सकते हैं, लेकिन दवा खोज, कीमत तुलना और केंद्र परिणाम ताज़ा नहीं होंगे।
+    {% else %}
+      No internet connection is available. Cached pages may still appear, but medicine search, price comparison and Kendra results will not be fresh.
+    {% endif %}
+  </p>
+</header>
+
+<div class="card">
+  <h2>{% if lang == 'hi' %}आगे क्या करें{% else %}What to do next{% endif %}</h2>
+  <ul>
+    {% if lang == 'hi' %}
+      <li>कनेक्शन जाँचें और पृष्ठ फिर लोड करें।</li>
+      <li>दवा या कीमत की जानकारी को अंतिम सत्यापित स्रोत मानकर उपयोग न करें।</li>
+      <li>आपातकाल में स्थानीय आपातकालीन सेवा या निकटतम अस्पताल से संपर्क करें।</li>
+    {% else %}
+      <li>Check your connection and reload the page.</li>
+      <li>Do not treat cached medicine or price information as the latest verified source.</li>
+      <li>In an emergency, contact local emergency services or the nearest hospital.</li>
+    {% endif %}
+  </ul>
+  <div class="card-actions">
+    <button class="btn btn-primary" type="button" data-retry>{{ t('Retry') }}</button>
+    <a class="btn btn-quiet" href="{{ url_for('home') }}">{{ t('Home') }}</a>
+  </div>
+  <p class="small">{{ t('Last updated') }}: {{ summary.loaded_at|dateonly or t('Unavailable') }} · {{ summary.mode|formlabel }}</p>
+</div>
+{% endblock %}

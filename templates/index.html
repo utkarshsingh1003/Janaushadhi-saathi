@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% from "_macros.html" import safety_notice with context %}
+
+{% block title %}{{ t('Janaushadhi Saathi') }} · {{ t('Find affordable generic medicines and official Jan Aushadhi Kendra information.') }}{% endblock %}
+{% block description %}{{ t('Search generic medicines, compare branded prices, find sample Kendra records and read official PMBJP resources. An independent information tool.') }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">PMBJP · Jan Aushadhi</p>
+    <h1>{{ t('Find affordable generic medicines and official Jan Aushadhi Kendra information.') }}</h1>
+    <p class="lede">{{ t('Search by generic name, salt or the brand printed on your strip. Check composition, strength and form before comparing prices.') }}</p>
+    <form class="search-bar" action="{{ url_for('search') }}" method="get" role="search">
+      <label class="sr-only" for="home-q">{{ t('Search medicines') }}</label>
+      <input id="home-q" name="q" type="search" maxlength="120" autocomplete="off"
+             placeholder="{{ t('Search a medicine or a salt name') }}"
+             aria-describedby="home-q-hint">
+      <button class="btn btn-primary" type="submit">{{ t('Search') }}</button>
+    </form>
+    <p id="home-q-hint" class="hint">{{ t('Try: paracetamol, metformin, Dolo') }}</p>
+    <div class="chips" aria-label="{{ t('Search suggestions') }}">
+      <a href="{{ url_for('search', q='Paracetamol') }}">Paracetamol</a>
+      <a href="{{ url_for('search', q='Metformin') }}">Metformin</a>
+      <a href="{{ url_for('search', q='Amlodipine') }}">Amlodipine</a>
+      <a href="{{ url_for('search', q='Dolo 650') }}">Dolo 650</a>
+    </div>
+  </div>
+  <aside class="hero-panel" aria-labelledby="status-title">
+    <h2 id="status-title">{{ t('Data status') }}</h2>
+    {% if summary.mode == 'verified' %}
+      <p class="badge badge-ok">{{ t('Verified') }}</p>
+      <p>{{ t('Catalogue version') }}: <code>{{ summary.version }}</code></p>
+    {% else %}
+      <p class="badge badge-warn">{{ t('Sample data') }}</p>
+      <p><strong>{{ t('Not official data') }}.</strong> {{ t('This deployment uses a bundled illustrative sample catalogue. No price, Kendra location or product identifier is claimed to be official.') }}</p>
+    {% endif %}
+    <dl class="mini-stats">
+      <div><dt>{{ t('Medicines listed') }}</dt><dd>{{ summary.medicines }}</dd></div>
+      <div><dt>{{ t('Kendra records') }}</dt><dd>{{ summary.kendras }}</dd></div>
+    </dl>
+    <a class="text-link" href="{{ url_for('about') }}#data">{{ t('Catalogue and data sources') }} →</a>
+  </aside>
+</section>
+
+<section class="section" aria-labelledby="actions-title">
+  <h2 id="actions-title">{{ t('What would you like to do?') }}</h2>
+  <div class="action-grid">
+    <a class="action-card" href="{{ url_for('search') }}">
+      <span class="action-icon" aria-hidden="true">⌕</span>
+      <h3>{{ t('Find a medicine') }}</h3>
+      <p>{{ t('Search the catalogue by generic name, brand, salt, strength or form.') }}</p>
+    </a>
+    <a class="action-card" href="{{ url_for('compare_index') }}">
+      <span class="action-icon" aria-hidden="true">₹</span>
+      <h3>{{ t('Compare a branded price with a generic') }}</h3>
+      <p>{{ t('Enter the price you paid and see a careful, unit-by-unit estimate.') }}</p>
+    </a>
+    <a class="action-card" href="{{ url_for('kendra') }}">
+      <span class="action-icon" aria-hidden="true">⌖</span>
+      <h3>{{ t('Find a Jan Aushadhi Kendra') }}</h3>
+      <p>{{ t('Look up sample Kendra records by state, district, city or PIN code.') }}</p>
+    </a>
+    <a class="action-card" href="{{ url_for('ocr_page') }}">
+      <span class="action-icon" aria-hidden="true">▣</span>
+      <h3>{{ t('Read a medicine label or prescription') }}</h3>
+      <p>{{ t('Extract text from a clear photo. Always review it before using it.') }}</p>
+    </a>
+  </div>
+</section>
+
+<section class="section split" aria-labelledby="how-title">
+  <div>
+    <h2 id="how-title">{{ t('How this works') }}</h2>
+    <ol class="steps">
+      <li>
+        <h3>{{ t('Search or scan') }}</h3>
+        <p>{{ t('Find a medicine by its generic name, salt or the brand on your strip.') }}</p>
+      </li>
+      <li>
+        <h3>{{ t('Check the details') }}</h3>
+        <p>{{ t('Read the composition, strength, form and source before comparing.') }}</p>
+      </li>
+      <li>
+        <h3>{{ t('Ask before changing') }}</h3>
+        <p>{{ t('A pharmacist or doctor must confirm any change to your medicine.') }}</p>
+      </li>
+    </ol>
+  </div>
+  <aside class="callout callout-info" aria-labelledby="trust-title">
+    <h2 id="trust-title">{{ t('Why trust matters here') }}</h2>
+    <ul class="tick-list">
+      <li>{{ t('We separate catalogue facts from estimates and clearly label sample data.') }}</li>
+      <li>{{ t('Every medicine page shows where its information came from.') }}</li>
+      <li>{{ t('Price comparisons always show their assumptions and verification status.') }}</li>
+      <li>{{ t('Matching checks composition, strength, form and release type — not spelling.') }}</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="section" aria-labelledby="official-title">
+  <div class="section-heading">
+    <h2 id="official-title">{{ t('Official PMBJP resources') }}</h2>
+    <a class="text-link" href="{{ url_for('resources') }}">{{ t('View all') }} →</a>
+  </div>
+  <p class="muted">{{ t('We link to official pages instead of copying information that may become outdated.') }}</p>
+  <div class="link-grid">
+    {% for link in (sources.official_links or [])[:4] %}
+      <a class="link-card" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+        <strong>{{ t(link.label) }}</strong>
+        <span>{{ t(link.note) }}</span>
+        <span class="external">{{ t('External link') }} ↗</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  {{ safety_notice() }}
+</section>
+{% endblock %}

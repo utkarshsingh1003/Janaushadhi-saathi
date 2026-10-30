@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% from "_macros.html" import safety_notice with context %}
+
+{% block title %}{{ t('Savings calculator') }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{{ t('Savings') }}</p>
+  <h1>{{ t('Savings calculator') }}</h1>
+  <p class="lede">{{ t('Build a temporary list of comparisons. Nothing is uploaded or saved on the server.') }}</p>
+</header>
+
+<section class="card" id="savings-app" aria-labelledby="list-title">
+  <div class="section-heading">
+    <h2 id="list-title">{{ t('Your comparison list') }}</h2>
+    <div class="card-actions">
+      <button class="btn btn-quiet" type="button" data-savings-print>{{ t('Print') }}</button>
+      <button class="btn btn-quiet" type="button" data-savings-clear>{{ t('Clear my list') }}</button>
+    </div>
+  </div>
+
+  <p id="savings-status" class="hint" role="status" aria-live="polite"></p>
+
+  <div id="savings-empty" class="empty-state compact" hidden>
+    <h3>{{ t('Your list is empty.') }}</h3>
+    <p>{{ t('Add a medicine from its comparison page to see totals here.') }}</p>
+    <a class="btn btn-secondary" href="{{ url_for('compare_index') }}">{{ t('Compare prices') }}</a>
+  </div>
+
+  <div id="savings-container" hidden>
+    <div class="table-wrap">
+      <table class="savings-table">
+        <caption class="sr-only">{{ t('Your comparison list') }}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ t('Medicine') }}</th>
+            <th scope="col">{{ t('Branded price you entered') }}</th>
+            <th scope="col">{{ t('Quantity') }}</th>
+            <th scope="col">{{ t('Purchases per month') }}</th>
+            <th scope="col">{{ t('Estimated difference') }}</th>
+            <th scope="col"><span class="sr-only">{{ t('Remove') }}</span></th>
+          </tr>
+        </thead>
+        <tbody id="savings-rows"></tbody>
+      </table>
+    </div>
+
+    <div class="totals-grid" id="savings-totals">
+      <div><span>{{ t('Total branded spend') }}</span><strong data-total="brand">—</strong></div>
+      <div><span>{{ t('Total generic spend') }}</span><strong data-total="generic">—</strong></div>
+      <div><span>{{ t('Total estimated difference') }}</span><strong data-total="difference">—</strong></div>
+      <div><span>{{ t('Estimated yearly difference') }}</span><strong data-total="yearly">—</strong></div>
+    </div>
+  </div>
+
+  <noscript>
+    <p class="alert alert-info">{{ t('This calculator needs JavaScript because the list stays in your browser. You can still compare one medicine at a time from its comparison page.') }}</p>
+  </noscript>
+
+  <p class="small">{{ t('This list is stored only in this browser on this device. Clearing browser data removes it.') }}</p>
+</section>
+
+<section class="section">
+  <h2>{{ t('Comparison assumptions') }}</h2>
+  <ul class="small">
+    <li>{{ t('Estimates use the prices you entered and the catalogue prices shown. They are not verified savings.') }}</li>
+    <li>{{ t('Both prices are converted to a price per unit before multiplying by the quantity you entered.') }}</li>
+    <li>{{ t('This is an estimate, not a quote. Local selling prices, taxes, stock and pack sizes can differ.') }}</li>
+    <li>{{ t('Jan Aushadhi medicine prices shown here are sample values, not verified official MRPs.') }}</li>
+  </ul>
+</section>
+
+<section class="section">
+  {{ safety_notice() }}
+</section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ code }} · {{ t(title) }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<section class="error-page" aria-labelledby="error-title">
+  <p class="error-code">{{ code }}</p>
+  <h1 id="error-title">{{ t(title) }}</h1>
+  <p class="lede">{{ t(message) }}</p>
+  <div class="card-actions">
+    <button class="btn btn-primary" type="button" data-retry>{{ t('Retry') }}</button>
+    <a class="btn btn-quiet" href="{{ url_for('home') }}">{{ t('Go to the home page') }}</a>
+  </div>
+  <p class="small">{{ t('This service is temporarily unavailable.') if code >= 500 else '' }}</p>
+</section>
+{% endblock %}

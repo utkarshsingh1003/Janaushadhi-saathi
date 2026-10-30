@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% from "_macros.html" import safety_notice with context %}
+
+{% block title %}{{ t('Help') }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{{ t('Help') }}</p>
+  <h1>{{ t('Help and feedback') }}</h1>
+  <p class="lede">
+    {% if lang == 'hi' %}
+      साइट का उपयोग करने, गलत जानकारी बताने और सुरक्षा से जुड़े सवालों के जवाब।
+    {% else %}
+      Guidance for using the site, reporting incorrect information and staying safe.
+    {% endif %}
+  </p>
+</header>
+
+<div class="prose-grid">
+  <section class="card">
+    <h2>{% if lang == 'hi' %}साइट का उपयोग कैसे करें{% else %}How to use this site{% endif %}</h2>
+    <ol class="steps compact">
+      <li>
+        <h3>{{ t('Find a medicine') }}</h3>
+        <p>{% if lang == 'hi' %}जेनेरिक नाम, साल्ट, ब्रांड, मात्रा या उत्पाद कोड से खोजें।{% else %}Search by generic name, salt, brand, strength or product code.{% endif %}</p>
+      </li>
+      <li>
+        <h3>{{ t('Check the details') }}</h3>
+        <p>{% if lang == 'hi' %}संघटन, मात्रा, रूप, पैक आकार और स्रोत पढ़ें। नमूना जानकारी को आधिकारिक न समझें।{% else %}Read the composition, strength, form, pack size and source. Do not treat sample data as official.{% endif %}</p>
+      </li>
+      <li>
+        <h3>{{ t('Compare carefully') }}</h3>
+        <p>{% if lang == 'hi' %}ब्रांड की कीमत स्वयं दर्ज करें। तुलना अनुमान है, कोटेशन नहीं।{% else %}Enter the branded price yourself. A comparison is an estimate, not a quotation.{% endif %}</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>{{ t('Emergency help') }}</h2>
+    <p>{{ t('For a medical emergency, contact local emergency services or the nearest hospital immediately.') }}</p>
+    <p class="small">{% if lang == 'hi' %}यह साइट आपातकालीन सेवा नहीं है और तुरंत मदद नहीं भेज सकती।{% else %}This site is not an emergency service and cannot dispatch help.{% endif %}</p>
+  </section>
+</div>
+
+<section class="section" id="report">
+  <div class="card">
+    <h2>{{ t('Report a problem with this site') }}</h2>
+    <p>{{ t('Tell us about an incorrect record or a broken page. Do not include prescription details or personal medical information.') }}</p>
+
+    {% if feedback_sent %}
+      <div class="alert alert-success" role="status">
+        <p>{{ t('Thank you. Your report was recorded.') }}</p>
+      </div>
+    {% else %}
+      <form method="post" action="{{ url_for('help_page') }}#report" class="stack-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="field">
+          <label for="category">{{ t('Report type') }}</label>
+          <select id="category" name="category" required>
+            {% for category in feedback_categories %}
+              <option value="{{ category }}">
+                {% if category == 'incorrect_medicine' %}{{ t('Incorrect medicine information') }}
+                {% elif category == 'outdated_kendra' %}{{ t('Outdated Kendra information') }}
+                {% elif category == 'website_problem' %}{{ t('Website problem') }}
+                {% else %}{{ t('Other') }}{% endif %}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="message">{{ t('Message') }} <span class="req">{{ t('Required') }}</span></label>
+          <textarea id="message" name="message" rows="6" minlength="10" maxlength="1500" required
+                    aria-describedby="message-hint"></textarea>
+          <p id="message-hint" class="hint">{{ t('Please write at least 10 characters.') }} {{ t('Do not include prescription details or personal medical information.') }}</p>
+        </div>
+        <div class="field">
+          <label for="contact">{{ t('Contact detail (optional)') }}</label>
+          <input id="contact" name="contact" type="text" maxlength="120" autocomplete="off">
+        </div>
+        <button class="btn btn-primary" type="submit">{{ t('Send report') }}</button>
+      </form>
+    {% endif %}
+
+    <p class="small">
+      {% if lang == 'hi' %}
+        रिपोर्ट में दिया गया संदेश और वैकल्पिक संपर्क विवरण सेवा संचालक देख सकते हैं। इन्हें अधिकतम 365 दिन रखा जाता है। आपका IP पता संदेश के साथ संग्रहीत नहीं किया जाता।
+      {% else %}
+        The message and optional contact detail you submit are visible to the service operator and are retained for up to 365 days. Your IP address is not stored with the message.
+      {% endif %}
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  {{ safety_notice() }}
+</section>
+{% endblock %}

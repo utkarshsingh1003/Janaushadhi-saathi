@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% from "_macros.html" import price_status, sample_badge, reason_list, safety_notice with context %}
+
+{% block title %}{{ medicine.generic_name }} {{ medicine.strength }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+{% block description %}{{ medicine.generic_name }} {{ medicine.strength }} {{ medicine.dosage_form }} — catalogue details, composition and source information.{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="{{ t('Back') }}">
+  <a href="{{ url_for('search') }}">← {{ t('Medicines') }}</a>
+</nav>
+
+<header class="page-head medicine-head">
+  <div>
+    <p class="eyebrow">{{ medicine.category }}</p>
+    <h1>{{ medicine.generic_name }} <span class="strength">{{ medicine.strength }}</span></h1>
+    {% if medicine.common_brands %}
+      <p class="muted">{{ t('Brand names') }}: {{ medicine.common_brands }}</p>
+    {% endif %}
+    <div class="badge-row">
+      {{ sample_badge(medicine) }}
+      {% if medicine.release_type and medicine.release_type != 'immediate' %}
+        <span class="badge badge-info">{{ medicine.release_type|formlabel }}</span>
+      {% endif %}
+      <span class="badge badge-quiet">{{ medicine.dosage_form|formlabel }}</span>
+    </div>
+  </div>
+  <div class="price-box">
+    <p class="price-label">{{ t('Price') }}</p>
+    <p class="price-display">
+      {% if medicine.jan_price_paise is not none %}{{ medicine.jan_price_paise|inr }}{% else %}—{% endif %}
+      <span class="price-unit">{{ t('per') }} {{ medicine.pack_size|int if medicine.pack_size == medicine.pack_size|int else medicine.pack_size }} {{ medicine.pack_unit }}</span>
+    </p>
+    {{ price_status(medicine) }}
+    {% if medicine.is_sample %}
+      <p class="small">{{ t('Illustrative sample price — not an official MRP') }}</p>
+    {% elif not medicine.jan_price_verified %}
+      <p class="small">{{ t('Official MRP not verified') }}</p>
+    {% endif %}
+  </div>
+</header>
+
+<div class="detail-grid">
+  <section class="card" aria-labelledby="facts-title">
+    <h2 id="facts-title">{{ t('Medicine details') }}</h2>
+    <dl class="detail-list">
+      <div><dt>{{ t('Generic name') }}</dt><dd>{{ medicine.generic_name }}</dd></div>
+      <div><dt>{{ t('Composition') }}</dt><dd>{{ medicine.composition }}</dd></div>
+      <div><dt>{{ t('Strength') }}</dt><dd>{{ medicine.strength }}</dd></div>
+      <div><dt>{{ t('Dosage form') }}</dt><dd>{{ medicine.dosage_form|formlabel }}</dd></div>
+      <div><dt>{{ t('Route') }}</dt><dd>{{ medicine.route|formlabel }}</dd></div>
+      <div><dt>{{ t('Release type') }}</dt><dd>{{ medicine.release_type|formlabel }}</dd></div>
+      <div><dt>{{ t('Pack size') }}</dt><dd>{{ medicine.pack_size|int if medicine.pack_size == medicine.pack_size|int else medicine.pack_size }} {{ medicine.pack_unit }}</dd></div>
+      <div><dt>{{ t('Category') }}</dt><dd>{{ medicine.category }}</dd></div>
+      {% if medicine.product_code %}
+        <div><dt>{{ t('Product code') }}</dt><dd><code>{{ medicine.product_code }}</code></dd></div>
+      {% endif %}
+    </dl>
+    <div class="card-actions">
+      <a class="btn btn-primary" href="{{ url_for('compare_detail', medicine_id=medicine.id) }}">{{ t('Compare this medicine') }}</a>
+      <button class="btn btn-quiet" type="button" data-copy-target="medicine-share-text">{{ t('Copy') }}</button>
+      <button class="btn btn-quiet" type="button" data-share>{{ t('Share') }}</button>
+      <button class="btn btn-quiet" type="button" data-print>{{ t('Print') }}</button>
+    </div>
+    <p id="medicine-share-text" class="sr-only">{{ medicine.generic_name }} {{ medicine.strength }} {{ medicine.dosage_form }}, {{ medicine.composition }}. {{ t('Janaushadhi Saathi') }}: {{ request.url }}</p>
+  </section>
+
+  <aside class="card" aria-labelledby="source-title">
+    <h2 id="source-title">{{ t('Information source') }}</h2>
+    {% if medicine.is_sample %}
+      <p class="badge badge-warn">{{ t('Sample data') }}</p>
+      <p>{{ t('This record is illustrative sample data. It is not an official PMBJP product record.') }}</p>
+    {% else %}
+      <p class="badge badge-ok">{{ t('Verified') }}</p>
+    {% endif %}
+    <dl class="detail-list compact">
+      <div><dt>{{ t('Source') }}</dt><dd>{{ medicine.source_name or t('Unavailable') }}</dd></div>
+      <div><dt>{{ t('Last updated') }}</dt><dd>{{ medicine.last_verified or t('Unavailable') }}</dd></div>
+      <div><dt>{{ t('Price status') }}</dt><dd>{{ t('Official MRP not verified') if not medicine.jan_price_verified else t('Verified') }}</dd></div>
+    </dl>
+    {% if medicine.source_url %}
+      <p><a class="text-link" href="{{ medicine.source_url }}" target="_blank" rel="noopener noreferrer">{{ t('Source') }} ↗</a></p>
+    {% endif %}
+    <p class="small">{{ t('To refresh data, an administrator must import a validated file with its source and retrieval date. See the project documentation.') }}</p>
+  </aside>
+</div>
+
+<section class="section" aria-labelledby="alternatives-title">
+  <h2 id="alternatives-title">{{ t('Find close catalogue matches') }}</h2>
+  <p class="muted">{{ t('Close matches use composition, strength, form, route and release type. A name that merely looks similar is never accepted.') }}</p>
+  {% if alternatives %}
+    <ul class="match-list">
+      {% for candidate, result in alternatives %}
+        <li class="match-card">
+          <div>
+            <h3><a href="{{ url_for('medicine_detail', medicine_id=candidate.id) }}">{{ candidate.generic_name }} {{ candidate.strength }}</a></h3>
+            <p class="small">{{ candidate.composition }} · {{ candidate.dosage_form|formlabel }} · {{ candidate.pack_size|int if candidate.pack_size == candidate.pack_size|int else candidate.pack_size }} {{ candidate.pack_unit }}</p>
+          </div>
+          <div class="match-side">
+            <span class="badge {{ 'badge-ok' if result.status == 'exact' else 'badge-info' }}">{{ result.status|formlabel }}</span>
+            <p class="small">{{ t('Ask a pharmacist before substituting any medicine.') }}</p>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-inline">{{ t('No verified close match in this catalogue.') }}</p>
+  {% endif %}
+</section>
+
+<section class="section">
+  {{ safety_notice() }}
+</section>
+{% endblock %}

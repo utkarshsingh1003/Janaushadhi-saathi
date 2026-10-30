@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pagination, price_status, sample_badge, safety_notice with context %}
+
+{% block title %}{{ t('Compare a branded medicine with a generic') }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{{ t('Compare prices') }}</p>
+  <h1>{{ t('Compare a branded medicine with a generic') }}</h1>
+  <p class="lede">{{ t('Choose a catalogue medicine, then enter the branded price you actually saw or paid.') }}</p>
+</header>
+
+<form class="search-bar" action="{{ url_for('compare_index') }}" method="get" role="search">
+  <label class="sr-only" for="compare-q">{{ t('Search the catalogue') }}</label>
+  <input id="compare-q" name="q" type="search" value="{{ result.query }}" maxlength="120"
+         placeholder="{{ t('Search by name, brand, salt or code') }}" autocomplete="off">
+  <button class="btn btn-primary" type="submit">{{ t('Search') }}</button>
+</form>
+
+<p class="result-summary"><strong>{{ result.total }}</strong> {{ t('results') if result.total != 1 else t('result') }}</p>
+
+{% if result.entries %}
+  <ul class="select-list">
+    {% for item in result.entries %}
+      {% set row = item.row %}
+      <li class="select-card">
+        <div>
+          <h2>{{ row.generic_name }} <span class="strength">{{ row.strength }}</span></h2>
+          <p class="small muted">{{ row.composition }} · {{ row.dosage_form|formlabel }} · {{ row.pack_size|int if row.pack_size == row.pack_size|int else row.pack_size }} {{ row.pack_unit }}</p>
+          <div class="badge-row">
+            {{ sample_badge(row) }}
+            {{ price_status(row) }}
+          </div>
+        </div>
+        <div class="select-side">
+          <p class="price-display">{{ row.jan_price_paise|inr if row.jan_price_paise is not none else '—' }}</p>
+          <a class="btn btn-secondary" href="{{ url_for('compare_detail', medicine_id=row.id) }}">{{ t('Choose medicine') }}</a>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+  {{ pagination(result.page, result.pages) }}
+{% else %}
+  <section class="empty-state">
+    <h2>{{ t('No medicine matched your search.') }}</h2>
+    <p>{{ t('Try a shorter name, check the spelling, or search by the salt name printed on the strip.') }}</p>
+    <a class="btn btn-secondary" href="{{ url_for('compare_index') }}">{{ t('Clear filters') }}</a>
+  </section>
+{% endif %}
+
+<section class="section">
+  {{ safety_notice() }}
+</section>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pagination, price_status, sample_badge, safety_notice with context %}
+
+{% block title %}{{ t('Search the medicine catalogue') }} · {{ t('Janaushadhi Saathi') }}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{{ t('Medicines') }}</p>
+  <h1>{{ t('Search the medicine catalogue') }}</h1>
+  <p class="lede">{{ t('Use a generic name, brand name, salt, strength, dosage form or product code. Spelling mistakes are tolerated.') }}</p>
+</header>
+
+<form class="filter-bar" action="{{ url_for('search') }}" method="get" role="search">
+  <div class="field field-grow">
+    <label for="q">{{ t('Search medicines') }}</label>
+    <input id="q" name="q" type="search" value="{{ result.query }}" maxlength="120" autocomplete="off"
+           placeholder="{{ t('Search by name, brand, salt or code') }}">
+  </div>
+  <div class="field">
+    <label for="form">{{ t('Dosage form') }}</label>
+    <select id="form" name="form">
+      <option value="">{{ t('All forms') }}</option>
+      {% for option in forms %}
+        <option value="{{ option }}" {% if request.args.get('form') == option %}selected{% endif %}>{{ option|formlabel }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="category">{{ t('Category') }}</label>
+    <select id="category" name="category">
+      <option value="">{{ t('All categories') }}</option>
+      {% for option in categories %}
+        <option value="{{ option }}" {% if request.args.get('category') == option %}selected{% endif %}>{{ option }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="sort">{{ t('Sort by') }}</label>
+    <select id="sort" name="sort">
+      <option value="relevance" {% if sort == 'relevance' %}selected{% endif %}>{{ t('Relevance') }}</option>
+      <option value="name" {% if sort == 'name' %}selected{% endif %}>{{ t('Name (A–Z)') }}</option>
+      <option value="price" {% if sort == 'price' %}selected{% endif %}>{{ t('Lowest price') }}</option>
+    </select>
+  </div>
+  <div class="filter-actions">
+    <button class="btn btn-primary" type="submit">{{ t('Apply filters') }}</button>
+    <a class="btn btn-quiet" href="{{ url_for('search') }}">{{ t('Clear filters') }}</a>
+  </div>
+</form>
+
+<div class="result-summary" role="status">
+  <p><strong>{{ result.total }}</strong> {{ t('results') if result.total != 1 else t('result') }}
+    {% if result.query %}· “{{ result.query }}”{% endif %}</p>
+  {% if summary.mode != 'verified' %}
+    <p class="badge badge-warn">{{ t('Sample data') }}</p>
+  {% endif %}
+</div>
+
+{% if result.entries %}
+  <ul class="result-list">
+    {% for item in result.entries %}
+      {% set row = item.row %}
+      <li class="result-card">
+        <div class="result-main">
+          <div class="result-title">
+            <h2><a href="{{ url_for('medicine_detail', medicine_id=row.id) }}">{{ row.generic_name }}</a></h2>
+            {% if row.release_type and row.release_type != 'immediate' %}
+              <span class="badge badge-info">{{ row.release_type|formlabel }}</span>
+            {% endif %}
+            {{ sample_badge(row) }}
+          </div>
+          {% if row.common_brands %}
+            <p class="muted small">{{ t('Brand names') }}: {{ row.common_brands }}</p>
+          {% endif %}
+          <dl class="inline-facts">
+            <div><dt>{{ t('Composition') }}</dt><dd>{{ row.composition }}</dd></div>
+            <div><dt>{{ t('Strength') }}</dt><dd>{{ row.strength }}</dd></div>
+            <div><dt>{{ t('Dosage form') }}</dt><dd>{{ row.dosage_form|formlabel }}</dd></div>
+            <div><dt>{{ t('Pack size') }}</dt><dd>{{ row.pack_size|int if row.pack_size == row.pack_size|int else row.pack_size }} {{ row.pack_unit }}</dd></div>
+            {% if row.product_code %}<div><dt>{{ t('Product code') }}</dt><dd><code>{{ row.product_code }}</code></dd></div>{% endif %}
+          </dl>
+        </div>
+        <div class="result-side">
+          <p class="price-display">
+            {% if row.jan_price_paise is not none %}{{ row.jan_price_paise|inr }}{% else %}—{% endif %}
+            <span class="price-unit">{{ t('per') }} {{ row.pack_size|int if row.pack_size == row.pack_size|int else row.pack_size }} {{ row.pack_unit }}</span>
+          </p>
+          {{ price_status(row) }}
+          <a class="btn btn-secondary" href="{{ url_for('medicine_detail', medicine_id=row.id) }}">{{ t('View details') }}</a>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+  {{ pagination(result.page, result.pages) }}
+{% else %}
+  <section class="empty-state" aria-labelledby="empty-title">
+    <h2 id="empty-title">{{ t('No medicine matched your search.') }}</h2>
+    <p>{{ t('Try a shorter name, check the spelling, or search by the salt name printed on the strip.') }}</p>
+    <a class="btn btn-secondary" href="{{ url_for('search') }}">{{ t('Clear filters') }}</a>
+  </section>
+{% endif %}
+
+<p class="notice small">{{ t('Searching only finds catalogue entries. It does not confirm that a medicine is right for you.') }}</p>
+
+<section class="section">
+  {{ safety_notice() }}
+</section>
+{% endblock %}

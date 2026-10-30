@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: janaushadhi-saathi
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: "1"
+      - key: WEB_THREADS
+        value: "4"
+      - key: RATELIMIT_ENABLED
+        value: "1"
+      - key: TRUST_PROXY
+        value: "1"

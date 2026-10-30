@@ -1,0 +1,57 @@
+{% macro price_status(row) %}
+  {% if row.jan_price_paise is none %}
+    <span class="badge badge-muted">{{ t('Price not verified') }}</span>
+  {% elif row.jan_price_verified and not row.is_sample %}
+    <span class="badge badge-ok">{{ t('Verified') }}</span>
+  {% else %}
+    <span class="badge badge-warn">{{ t('Sample data') }}</span>
+  {% endif %}
+{% endmacro %}
+
+{% macro sample_badge(row) %}
+  {% if row.is_sample %}
+    <span class="badge badge-warn">{{ t('Sample data') }}</span>
+  {% elif row.last_verified %}
+    <span class="badge badge-ok">{{ t('Verified') }} · {{ row.last_verified|dateonly }}</span>
+  {% else %}
+    <span class="badge badge-muted">{{ t('Not verified') }}</span>
+  {% endif %}
+{% endmacro %}
+
+{% macro reason_list(reasons) %}
+  {% if reasons %}
+    <ul class="reason-list">
+      {% for item in reasons %}
+        <li><code>{{ item.code }}</code> {{ item.label }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endmacro %}
+
+{% macro pagination(page, pages) %}
+  {% if pages > 1 %}
+    <nav class="pagination" aria-label="{{ t('Page') }}">
+      {% if page > 1 %}
+        <a class="btn btn-quiet" href="{{ page_url(page - 1) }}" rel="prev">← {{ t('Previous') }}</a>
+      {% endif %}
+      <span class="pagination-status">{{ t('Page') }} {{ page }} {{ t('of') }} {{ pages }}</span>
+      {% if page < pages %}
+        <a class="btn btn-quiet" href="{{ page_url(page + 1) }}" rel="next">{{ t('Next') }} →</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% endmacro %}
+
+{% macro safety_notice() %}
+  <aside class="callout callout-danger" aria-labelledby="safety-title">
+    <h2 id="safety-title">{{ t('Medical disclaimer') }}</h2>
+    <p>{{ t('This is an independent information tool. It is not a government app and does not provide medical advice, diagnosis or treatment. Always follow your prescription and consult a qualified doctor or pharmacist.') }}</p>
+    <p class="small">{{ t('Ask a pharmacist before substituting any medicine.') }}</p>
+  </aside>
+{% endmacro %}
+
+{% macro sample_notice() %}
+  <aside class="callout callout-warn">
+    <p><strong>{{ t('Sample data') }}.</strong> {{ t('This record is illustrative sample data. It is not an official PMBJP product record.') }}</p>
+  </aside>
+{% endmacro %}
