@@ -104,7 +104,19 @@ class InMemoryUploadRequest(Request):
 
 
 def create_app(test_config: Mapping[str, Any] | None = None) -> Flask:
-    app = Flask(__name__, instance_relative_config=True)
+    # Serverless platforms such as Vercel mount the function filesystem as
+    # read-only, so Flask's default <root>/instance folder is not writable there
+    # and creating it fails. Keep writable runtime state (for example the SQLite
+    # database) under /tmp when running on Vercel; local development keeps the
+    # default instance folder.
+    instance_path = os.environ.get("FLASK_INSTANCE_PATH") or (
+        "/tmp" if os.environ.get("VERCEL") == "1" else None
+    )
+    app = Flask(
+        __name__,
+        instance_relative_config=True,
+        instance_path=instance_path,
+    )
     app.request_class = InMemoryUploadRequest
     environment = os.environ.get("FLASK_ENV", "development")
     secret_key = os.environ.get("SECRET_KEY")
