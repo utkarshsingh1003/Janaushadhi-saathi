@@ -92,6 +92,10 @@ Actual local result on 2026-10-30 (Python 3.14.6):
 - No Docker, GitHub CLI, Tesseract or Render credentials were available locally,
   so the Docker image, GitHub Actions run and Render deployment were **not**
   executed. The configuration files are provided; see [DEPLOYMENT.md](DEPLOYMENT.md).
+- The GitHub token available in this environment could not create a repository
+  (`403 Resource not accessible by personal access token`) and the `gh` CLI is
+  absent, so no GitHub repository was created or pushed. See
+  [DEPLOYMENT.md](DEPLOYMENT.md) for the exact steps and blockers.
 
 The tests cover strict matcher regressions, combination handling, strength and
 release rejections, pack-price arithmetic, savings-list partial failures, Kendra
@@ -251,7 +255,9 @@ Dockerfile / render.yaml   Deployment configuration
 - The rate limiter is per process. The admin feedback view is intentionally
   minimal and token-protected.
 - Docker build, GitHub Actions execution and Render deployment were not run
-  locally because `docker`, `gh` and Render credentials are unavailable. See
+  locally: no container runtime, `gh`, or Render credentials were available, and
+  the GitHub token in use could not create repositories
+  (`403 Resource not accessible by personal access token`). See
   [DEPLOYMENT.md](DEPLOYMENT.md) for the exact steps and blockers.
 
 ## Deployment

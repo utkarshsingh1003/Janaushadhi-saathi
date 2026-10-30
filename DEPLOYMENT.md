@@ -16,13 +16,29 @@ this workspace and what was blocked by missing local tools or credentials.
 | Coverage | `86%` across `app.py`, `core/` and `scripts/` |
 | Local Gunicorn smoke test | Verified locally over HTTP |
 | Docker image build and container run | **Not executed** — `docker` is not installed in this workspace |
-| GitHub Actions execution | **Not executed locally** — use the workflow in `.github/workflows/ci.yml`; the local machine has no `gh` CLI |
+| GitHub Actions execution | **Not executed locally** — no `gh` CLI and no credential with repository-creation scope; see the GitHub blocker below |
 | Render deployment | **Not executed** — no Render account session, API key or CLI is available here |
 | Tesseract success path | **Not executed locally** — `tesseract` is not installed here; the image includes it. The graceful `503` path and mocked OCR paths are tested. |
 
-The configuration files are complete, but a configuration file is not proof of
-a successful remote deployment. Complete the steps below with your own
-credentials and record the resulting URL and CI run.
+### GitHub repository blocker
+
+Repository creation was attempted through both the GitHub MCP tools and the
+GitHub REST API while signed in as `utkarshsingh1003`. Both returned:
+
+```
+403 Resource not accessible by personal access token
+```
+
+No repository was created and nothing was pushed. The available personal access
+token does not have permission to create repositories (it is likely scoped to
+existing repositories only), and the `gh` CLI is not installed, so repository
+creation could not be completed from this environment. Once a token with
+write/admin scope for the account is available, or the browser session has
+GitHub sign-in, create the repository and continue with the steps below.
+
+A configuration file is not proof of a successful remote deployment. Complete
+the steps below with your own credentials and record the resulting URL and CI
+run.
 
 ## 1. Local development
 
@@ -169,6 +185,10 @@ push, and open the **Actions** tab. The workflow needs no secrets for the test
 and Docker jobs. Pull requests from forks receive a read-only `GITHUB_TOKEN`,
 which is sufficient here.
 
+Note: repository creation was also attempted via the GitHub REST API and MCP
+tools in this workspace and both returned `403 Resource not accessible by
+personal access token`, so no repository could be created or pushed from here.
+
 If Docker is unavailable on the runner, the Docker job cannot pass; that is a
 runner problem, not a substitute for a test result. GitHub-hosted
 `ubuntu-latest` runners normally provide Docker.
@@ -270,6 +290,8 @@ live service and the health check passes.
 - Test command: `./.venv/bin/python -m pytest -q`.
 - Coverage command: `./.venv/bin/python -m pytest --cov=app --cov=core --cov=scripts --cov-report=term-missing`.
 - The test suite uses temporary SQLite files and never touches `instance/janaushadhi.db`.
-- Docker, GitHub Actions and Render were not executed in this workspace because
-  the corresponding local tools/credentials were unavailable. The provided
-  configuration is ready for an operator who has them.
+- Docker, GitHub Actions and Render were not executed in this workspace. No
+  container runtime, GitHub credentials with repository-creation scope, or Render
+  credentials were available, so no GitHub repository was created or pushed and
+  no deployment was made. The provided configuration is ready for an operator
+  who has those credentials.
